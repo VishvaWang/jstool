@@ -20,45 +20,96 @@ $.post("http://zjy2.icve.com.cn/student/learning/" +
                                 "openClassId=" + course.openClassId + "&" +
                                 "topicId=" + t.id, function (p) {//根据标题id获取细胞列表包装类 ??? 神他妈变量名
                                 for (c of p.cellList) {//遍历细胞列表
-                                    var cellBase = "http://zjy2.icve.com.cn/common/Directory/";
-                                    if (c.stuCellPercent < 100) {
-                                        $.post(cellBase +
-                                            "viewDirectory?" +
-                                            "courseOpenId=" + course.courseOpenId + "&" +
-                                            "openClassId=" + course.openClassId + "&" +
-                                            "flag=s&" +
-                                            "moduleId=" + m.id + "&" +
-                                            "cellId=" + c.Id, function (i) {//i = information 根据细胞id获取更多相关信息
-                                            var type = i.courseCell.CategoryName
-                                            if (type == "视频") {
-                                                $.post(cellBase +//stuStudyNewlyTime等于AudioVideoLong
-                                                    "stuProcessCellLog?" +
-                                                    "courseOpenId=" + course.courseOpenId + "&" +
-                                                    "openClassId=" + course.openClassId + "&" +
-                                                    "picNum=0&" +
-                                                    "studyNewlyTime=" + i.courseCell.AudioVideoLong + "&" +
-                                                    "studyNewlyPicNum=0&" +
-                                                    "token=" + i.guIdToken + "&" +
-                                                    "cellLogId=" + i.cellLogId + "&" +
-                                                    "cellId=" + c.Id, function (r) {// r =result 返回执行结果
-                                                }, 'json');
-                                            } else {
-                                                var num = i.courseCell.PageCount;
-                                                $.post(cellBase +
-                                                    "stuProcessCellLog?" +
-                                                    "courseOpenId=" + course.courseOpenId + "&" +
-                                                    "openClassId=" + course.openClassId + "&" +
-                                                    "picNum=" + num + "&" +
-                                                    "studyNewlyTime=0&" +
-                                                    "studyNewlyPicNum=" + num + "&" +
-                                                    "token=" + i.guIdToken + "&" +
-                                                    "cellLogId=" + i.cellLogId + "&" +
-                                                    "cellId=" + c.Id, function (r) {
+                                    (function (c) {
+                                        var cellBase = "http://zjy2.icve.com.cn/common/Directory/";
+                                        if (c.stuCellPercent < 100) {//进度小于100
+                                            $.post(cellBase +
+                                                "viewDirectory?" +
+                                                "courseOpenId=" + course.courseOpenId + "&" +
+                                                "openClassId=" + course.openClassId + "&" +
+                                                "flag=s&" +
+                                                "moduleId=" + m.id + "&" +
+                                                "cellId=" + c.Id, function (i) {//i = information 根据细胞id获取更多相关信息
+                                                if (i.code == 1) {
+                                                    var type = i.courseCell.CategoryName;
+                                                    if (type == "视频") {
+                                                        $.post(cellBase +//stuStudyNewlyTime等于AudioVideoLong
+                                                            "stuProcessCellLog?" +
+                                                            "courseOpenId=" + course.courseOpenId + "&" +
+                                                            "openClassId=" + course.openClassId + "&" +
+                                                            "picNum=0&" +
+                                                            "studyNewlyTime=" + i.courseCell.AudioVideoLong + "&" +
+                                                            "studyNewlyPicNum=0&" +
+                                                            "token=" + i.guIdToken + "&" +
+                                                            "cellLogId=" + i.cellLogId + "&" +
+                                                            "cellId=" + c.Id, function (r) {// r =result 返回执行结果
+                                                        }, 'json');
+                                                    } else {
+                                                        var num = i.courseCell.PageCount;
+                                                        $.post(cellBase +
+                                                            "stuProcessCellLog?" +
+                                                            "courseOpenId=" + course.courseOpenId + "&" +
+                                                            "openClassId=" + course.openClassId + "&" +
+                                                            "picNum=" + num + "&" +
+                                                            "studyNewlyTime=0&" +
+                                                            "studyNewlyPicNum=" + num + "&" +
+                                                            "token=" + i.guIdToken + "&" +
+                                                            "cellLogId=" + i.cellLogId + "&" +
+                                                            "cellId=" + c.Id, function (r) {
 
-                                                }, 'json');
-                                            }
-                                        }, 'json')
-                                    }
+                                                        }, 'json');
+                                                    }
+                                                } else {
+                                                    console.log(c.cellName+'获取cell信息出错,尝试重新获取'+' cell id:'+c.Id)
+                                                    $.post(cellBase +
+                                                        "viewDirectory?" +
+                                                        "courseOpenId=" + course.courseOpenId + "&" +
+                                                        "openClassId=" + course.openClassId + "&" +
+                                                        "flag=s&" +
+                                                        "moduleId=" + m.id + "&" +
+                                                        "cellId=" + c.Id, function (i) {//i = information 根据细胞id获取更多相关信息
+                                                        if (i.code == 1) {
+                                                            console.log(c.cellName+'第二次获取cell信息成功'+' cell id:'+c.Id)
+                                                            var type = i.courseCell.CategoryName;
+                                                            if (type == "视频") {
+                                                                $.post(cellBase +//stuStudyNewlyTime等于AudioVideoLong
+                                                                    "stuProcessCellLog?" +
+                                                                    "courseOpenId=" + course.courseOpenId + "&" +
+                                                                    "openClassId=" + course.openClassId + "&" +
+                                                                    "picNum=0&" +
+                                                                    "studyNewlyTime=" + i.courseCell.AudioVideoLong + "&" +
+                                                                    "studyNewlyPicNum=0&" +
+                                                                    "token=" + i.guIdToken + "&" +
+                                                                    "cellLogId=" + i.cellLogId + "&" +
+                                                                    "cellId=" + c.Id, function (r) {// r =result 返回执行结果
+                                                                }, 'json');
+                                                            } else {
+                                                                var num = i.courseCell.PageCount;
+                                                                $.post(cellBase +
+                                                                    "stuProcessCellLog?" +
+                                                                    "courseOpenId=" + course.courseOpenId + "&" +
+                                                                    "openClassId=" + course.openClassId + "&" +
+                                                                    "picNum=" + num + "&" +
+                                                                    "studyNewlyTime=0&" +
+                                                                    "studyNewlyPicNum=" + num + "&" +
+                                                                    "token=" + i.guIdToken + "&" +
+                                                                    "cellLogId=" + i.cellLogId + "&" +
+                                                                    "cellId=" + c.Id, function (r) {
+
+                                                                }, 'json');
+                                                            }
+                                                        } else {
+                                                            console.log(c.cellName+' 第二次获取cell信息仍然出错,跳过该cell'+' cell id:'+c.Id)
+                                                        }
+
+
+                                                    }, 'json')
+                                                }
+
+                                            }, 'json')
+                                        }
+                                    })(c)
+
                                 }
                             }, 'json');
                         }
