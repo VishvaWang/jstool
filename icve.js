@@ -1,3 +1,6 @@
+/**
+ * Created by Administrator on 2018/12/4.
+ */
 $.post("http://zjy2.icve.com.cn/student/learning/" +
     "getLearnningCourseList",function (p) {//获取课程列表
     var base = "http://zjy2.icve.com.cn/study/process/";//设置基础url
@@ -8,7 +11,6 @@ $.post("http://zjy2.icve.com.cn/student/learning/" +
                 "courseOpenId=" + course.courseOpenId + "&" +
                 "openClassId=" + course.openClassId, function (p) {//获取模块列表的包装类
                 for (m of p.progress.moduleList) {//遍历模块列表
-                    console.log(m.name)
                     $.post(base +
                         "getTopicByModuleId?" +
                         "courseOpenId=" + course.courseOpenId + "&" +
@@ -20,7 +22,7 @@ $.post("http://zjy2.icve.com.cn/student/learning/" +
                                 "openClassId=" + course.openClassId + "&" +
                                 "topicId=" + t.id, function (p) {//根据标题id获取细胞列表包装类 ??? 神他妈变量名
                                 for (c of p.cellList) {//遍历细胞列表
-                                    (function (c) {
+                                    (function (c,check) {
                                         var cellBase = "http://zjy2.icve.com.cn/common/Directory/";
                                         if (c.stuCellPercent < 100) {//进度小于100
                                             $.post(cellBase +
@@ -43,6 +45,7 @@ $.post("http://zjy2.icve.com.cn/student/learning/" +
                                                             "token=" + i.guIdToken + "&" +
                                                             "cellLogId=" + i.cellLogId + "&" +
                                                             "cellId=" + c.Id, function (r) {// r =result 返回执行结果
+                                                                check(c.ID,i.cellPercent)
                                                         }, 'json');
                                                     } else {
                                                         var num = i.courseCell.PageCount;
@@ -56,7 +59,7 @@ $.post("http://zjy2.icve.com.cn/student/learning/" +
                                                             "token=" + i.guIdToken + "&" +
                                                             "cellLogId=" + i.cellLogId + "&" +
                                                             "cellId=" + c.Id, function (r) {
-
+                                                                check(c.ID,i.cellPercent)
                                                         }, 'json');
                                                     }
                                                 } else {
@@ -82,6 +85,7 @@ $.post("http://zjy2.icve.com.cn/student/learning/" +
                                                                     "token=" + i.guIdToken + "&" +
                                                                     "cellLogId=" + i.cellLogId + "&" +
                                                                     "cellId=" + c.Id, function (r) {// r =result 返回执行结果
+                                                                        check(c.ID,i.cellPercent)
                                                                 }, 'json');
                                                             } else {
                                                                 var num = i.courseCell.PageCount;
@@ -95,7 +99,7 @@ $.post("http://zjy2.icve.com.cn/student/learning/" +
                                                                     "token=" + i.guIdToken + "&" +
                                                                     "cellLogId=" + i.cellLogId + "&" +
                                                                     "cellId=" + c.Id, function (r) {
-
+                                                                        check(c.ID,i.cellPercent)
                                                                 }, 'json');
                                                             }
                                                         } else {
@@ -108,7 +112,21 @@ $.post("http://zjy2.icve.com.cn/student/learning/" +
 
                                             }, 'json')
                                         }
-                                    })(c)
+                                    })(c,function (cellId,startpercent) {
+                                        var cellBase = "http://zjy2.icve.com.cn/common/Directory/";
+                                        $.post(cellBase +
+                                            "viewDirectory?" +
+                                            "courseOpenId=" + course.courseOpenId + "&" +
+                                            "openClassId=" + course.openClassId + "&" +
+                                            "flag=s&" +
+                                            "moduleId=" + m.id + "&" +
+                                            "cellId=" + c.Id, function (i) {
+                                            console.log(c.Id)
+                                            if (i.cellPercent<100) {
+                                                console.log(c.cellName+'未能一次完成'+' cell id:'+c.Id+'类型:'+'courseCell.CategoryName'+'起始进度'+startpercent+'当前进度：'+i.cellPercent+' 本次完成：'+i.cellPercent-startpercent)
+                                            }
+                                        });
+                                    })
 
                                 }
                             }, 'json');
