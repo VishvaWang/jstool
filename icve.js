@@ -1,3 +1,4 @@
+//职教云刷课脚本
 $.post("http://zjy2.icve.com.cn/student/learning/" +
     "getLearnningCourseList",function (p) {//获取课程列表
     var base = "http://zjy2.icve.com.cn/study/process/";//设置基础url
