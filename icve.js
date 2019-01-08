@@ -1,7 +1,7 @@
 //职教云刷课脚本
-$.post("http://zjy2.icve.com.cn/student/learning/" +
+$.post(window.location.origin+"/student/learning/" +
     "getLearnningCourseList",function (p) {//获取课程列表
-    var base = "http://zjy2.icve.com.cn/study/process/";//设置基础url
+    var base = window.location.origin+"/study/process/";//设置基础url
     for (course of p.courseList) {//遍历课程
         (function (course) {
             $.post(base +
@@ -20,9 +20,9 @@ $.post("http://zjy2.icve.com.cn/student/learning/" +
                                 "openClassId=" + course.openClassId + "&" +
                                 "topicId=" + t.id, function (p) {//根据标题id获取细胞列表包装类 ??? 神他妈变量名
                                 for (c of p.cellList) {//遍历细胞列表
-                                    (function (c) {
-                                        var cellBase = "http://zjy2.icve.com.cn/common/Directory/";
-                                        if (c.stuCellPercent < 100) {//进度小于100
+                                    function handlecell(c) {
+                                        var cellBase = window.location.origin+"/common/Directory/";
+                                        if (c.stuCellPercent < 100||c.stuCellFourPercent < 100||c.categoryName=='子节点') {//进度小于100
                                             function videopost(info,handleResult) {
                                                 $.post(cellBase +//stuStudyNewlyTime等于AudioVideoLong
                                                     "stuProcessCellLog?" +
@@ -50,7 +50,6 @@ $.post("http://zjy2.icve.com.cn/student/learning/" +
                                             }
                                             function handle(info,post) {
                                                 function check (cellId,startpercent,result) {
-                                                    var cellBase = "http://zjy2.icve.com.cn/common/Directory/";
                                                     $.post(cellBase +
                                                         "viewDirectory?" +
                                                         "courseOpenId=" + course.courseOpenId + "&" +
@@ -75,21 +74,26 @@ $.post("http://zjy2.icve.com.cn/student/learning/" +
                                                     check(info.courseCell.Id,info.cellPercent,r);
                                                 })
                                             }
-                                            function handlecell(info,count) {
+                                            function handlecellfortype(info,count) {
                                                 if (count <= 3) {
                                                     if (info.code != 1) {
-                                                        getInfoAndHandle(handlecell,count + 1);
+                                                        getInfoAndHandle(handlecellfortype,count + 1);
                                                     } else {
                                                         var type=info.courseCell.CategoryName;
                                                         if (type == "视频") {
                                                             handle(info,videopost)
+                                                        }else if (type == "子节点") {
+                                                            for (cc of c.childNodeList) {//cc是子节点childnodelist中的cell
+                                                                handlecell(cc)
+                                                            }
                                                         } else {
-                                                            handle(info,otherpost)
+                                                            handle(info, otherpost);
                                                         }
                                                     }
                                                 }
                                             }
                                             function getInfoAndHandle(handlecell,count) {
+
                                                 $.post(cellBase +
                                                     "viewDirectory?" +
                                                     "courseOpenId=" + course.courseOpenId + "&" +
@@ -97,13 +101,14 @@ $.post("http://zjy2.icve.com.cn/student/learning/" +
                                                     "flag=s&" +
                                                     "moduleId=" + m.id + "&" +
                                                     "cellId=" + c.Id,function (info) {
-                                                        handlecell(info,count)
+                                                    handlecell(info,count)
                                                 }, 'json')
                                             }
 
-                                            getInfoAndHandle(handlecell,0)
+                                            getInfoAndHandle(handlecellfortype,0)
                                         }
-                                    })(c)
+                                    };
+                                    handlecell(c);
                                 }
                             }, 'json');
                         }
