@@ -1,4 +1,4 @@
-//职教云刷课脚本
+//职教云刷课脚本 
 $.post(window.location.origin+"/student/learning/" +
     "getLearnningCourseList",function (p) {//获取课程列表
     var base = window.location.origin+"/study/process/";//设置基础url
