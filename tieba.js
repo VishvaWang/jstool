@@ -9,7 +9,7 @@
             doneCount++;
             if (doneCount==20){
                 $('#search_list').load(document.URL +  ' #search_list');
-                 arguments.callee.arguments.callee(0);
+                 arguments.callee.celler(0);
             }
         })
     }
