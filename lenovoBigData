@@ -1,0 +1,54 @@
+// ==UserScript==
+// @name         大数据刷课
+// @namespace    http://tampermonkey.net/
+// @version      0.1
+// @description  try to take over the world!
+// @author       You
+// @match        http://h.vishva.wang/course 
+// @grant        none
+// ==/UserScript==
+// 引入jq后与原jq发生冲突
+(function() {
+    'use strict';
+
+    if($('.cy')[0]) {
+
+        $('.cy')[0].onclick();
+
+        setTimeout(()=>{
+
+            if ($('.exercise-one')[0].innerHTML){
+
+                $('.single-ul')[0].children[Math.floor(Math.random()*4)].click();
+
+                $('.single-button').click();
+
+            }else if($('.exercise-two')[0].innerHTML.includes("多选题")){
+
+                var answer=Math.floor(Math.random()*15)+1;
+
+                if (answer & 0b1000)$('.multi-ul')[0].children[0].click();
+                if (answer & 0b0100)$('.multi-ul')[0].children[1].click();
+                if (answer & 0b0010)$('.multi-ul')[0].children[2].click();
+                if (answer & 0b0001)$('.multi-ul')[0].children[3].click();
+
+                $('.multi-button').click();
+            }else if($('.exercise-two')[0].innerHTML.includes("判断题")){
+
+                $('.judge-ul')[0].children[0].click();
+                if(Math.floor(Math.random()*2))$('.judge-ul')[0].children[0].click();
+                $('.judge-button').click();
+
+            }
+
+        },60)
+
+    }else {
+
+        fetch("http://h.vishva.wang/playcontrol/savetime"+$('.jr')[0].href.replace('http://h.vishva.wang/play','').replace(/(\d+\/)(\d+\/)(\d+\/)/,"$1$2")+"/?sec=9999",
+            {"credentials":"include"});
+
+        location.reload(true);
+
+    }
+})();
